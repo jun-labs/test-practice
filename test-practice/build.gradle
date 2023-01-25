@@ -1,0 +1,57 @@
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '2.7.7'
+    id 'io.spring.dependency-management' version '1.0.15.RELEASE'
+}
+
+group = 'study.test'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '17'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    // Spring-Boot
+    implementation('org.springframework.boot:spring-boot-starter-web')
+    implementation('org.springframework.boot:spring-boot-starter')
+    implementation('org.springframework.boot:spring-boot-starter-validation')
+
+    // Jpa, QueryDSL
+    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+    implementation('com.querydsl:querydsl-jpa')
+
+    // Jdbc
+    implementation(group: 'org.springframework.boot', name: 'spring-boot-starter-jdbc', version: '2.7.7')
+
+    // Database --------------------------------------------------------------------------------------------
+
+    // MySQL
+    implementation(group: 'mysql', name: 'mysql-connector-java', version: '8.0.28')
+    runtimeOnly('mysql:mysql-connector-java')
+
+    // Test
+    implementation('junit:junit:4.13.2')
+    testImplementation('org.springframework.boot:spring-boot-starter-test')
+
+    // AcceptanceTest
+    testImplementation('org.springframework.restdocs:spring-restdocs-mockmvc')
+    testImplementation('org.springframework.restdocs:spring-restdocs-restassured')
+    testImplementation('com.github.tomakehurst:wiremock-jre8:2.35.0')
+    testImplementation('com.github.tomakehurst:wiremock-jre8-standalone:2.35.0')
+    implementation(group: 'org.springframework.cloud', name: 'spring-cloud-starter-contract-stub-runner', version: '3.0.6')
+    testImplementation('de.skuzzle.springboot.test:spring-boot-wiremock:0.0.18')
+
+    // Lombok
+    compileOnly("org.projectlombok:lombok")
+    annotationProcessor('org.projectlombok:lombok')
+    annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
+    testAnnotationProcessor('org.projectlombok:lombok')
+    testCompileOnly("org.projectlombok:lombok")
+
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}
