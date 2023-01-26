@@ -1,4 +1,4 @@
-package study.test.practice.web.user.dto.response;
+package study.test.practice.web.user.presentation.dto.response;
 
 import study.test.practice.domain.user.entity.User;
 

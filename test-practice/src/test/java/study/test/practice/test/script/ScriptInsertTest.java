@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
-import study.test.practice.DatabaseInitialization;
+import study.test.practice.test.configuration.DatabaseConfiguration;
 import study.test.practice.domain.user.entity.User;
 import study.test.practice.domain.user.infrastructure.UserJpaRepository;
 import study.test.practice.test.InsertData;
@@ -19,14 +19,14 @@ import study.test.practice.test.InsertData;
 class ScriptInsertTest {
 
     @Autowired
-    private DatabaseInitialization databaseInitialization;
+    private DatabaseConfiguration databaseConfiguration;
 
     @Autowired
     private UserJpaRepository userJpaRepository;
 
     @AfterEach
     void beforeEach() {
-        databaseInitialization.truncateAllEntity();
+        databaseConfiguration.truncateAllEntity();
     }
 
     @Test

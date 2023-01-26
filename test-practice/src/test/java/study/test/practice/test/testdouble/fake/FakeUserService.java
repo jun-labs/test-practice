@@ -1,7 +1,7 @@
 package study.test.practice.test.testdouble.fake;
 
 import study.test.practice.domain.user.entity.User;
-import study.test.practice.web.application.UserService;
+import study.test.practice.web.user.application.UserService;
 
 import java.util.List;
 import java.util.Map;

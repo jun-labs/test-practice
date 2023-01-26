@@ -1,4 +1,4 @@
-package study.test.practice.web.application;
+package study.test.practice.web.user.application;
 
 import study.test.practice.domain.user.entity.User;
 

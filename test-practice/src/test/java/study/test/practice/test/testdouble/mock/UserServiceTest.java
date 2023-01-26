@@ -10,7 +10,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import study.test.practice.domain.user.entity.User;
 import study.test.practice.domain.user.infrastructure.UserJpaRepository;
 import study.test.practice.test.configuration.testcontainer.AbstractTestContainer;
-import study.test.practice.web.application.UserServiceImpl;
+import study.test.practice.web.user.application.UserServiceImpl;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;

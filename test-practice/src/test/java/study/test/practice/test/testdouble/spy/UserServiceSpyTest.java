@@ -9,7 +9,7 @@ import org.mockito.exceptions.verification.WantedButNotInvoked;
 import org.mockito.junit.MockitoJUnitRunner;
 import study.test.practice.domain.user.entity.User;
 import study.test.practice.domain.user.infrastructure.UserJpaRepository;
-import study.test.practice.web.application.UserServiceImpl;
+import study.test.practice.web.user.application.UserServiceImpl;
 import study.test.practice.test.configuration.testcontainer.AbstractTestContainer;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;

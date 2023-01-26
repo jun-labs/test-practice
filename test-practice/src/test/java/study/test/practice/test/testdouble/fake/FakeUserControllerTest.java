@@ -12,9 +12,9 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import study.test.practice.domain.user.entity.User;
 import study.test.practice.test.configuration.testcontainer.AbstractTestContainer;
-import study.test.practice.web.user.UserCommandController;
-import study.test.practice.web.user.dto.request.UserSignupRequest;
-import study.test.practice.web.user.dto.response.UserSignupResponse;
+import study.test.practice.web.user.presentation.UserController;
+import study.test.practice.web.user.presentation.dto.request.UserSignupRequest;
+import study.test.practice.web.user.presentation.dto.response.UserSignupResponse;
 
 import static org.mockito.Mockito.doReturn;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -23,13 +23,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @AutoConfigureMockMvc
-class FakeUserCommandControllerTest extends AbstractTestContainer {
+class FakeUserControllerTest extends AbstractTestContainer {
 
     @Mock
     private FakeUserService userService;
 
     @InjectMocks
-    private UserCommandController userCommandController;
+    private UserController userController;
 
     @Autowired
     private MockMvc mockMvc;

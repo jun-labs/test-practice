@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
-public class DatabaseInitialization {
+public class DatabaseConfiguration {
 
     private static final String SET_AUTO_COMMIT_FALSE = "SET FOREIGN_KEY_CHECKS = 0";
     private static final String SET_AUTO_COMMIT_TRUE = "SET FOREIGN_KEY_CHECKS = 1";
