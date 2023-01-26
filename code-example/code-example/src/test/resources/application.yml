@@ -1,0 +1,21 @@
+spring:
+  redis:
+    connect-timeout: ${VALUE}
+    host: ${HOST}
+    port: ${PORT}
+
+  jpa:
+    database: mysql
+    open-in-view: false
+    properties:
+      hibernate:
+        format_sql: true
+        default_batch_fetch_size: 1000
+    hibernate:
+      ddl-auto: ${DDL-PLAN}
+
+  datasource:
+    driver-class-name: ${DRIVER-CLASS-NAME}
+    url: ${URL}
+    username: ${USERNAME}
+    password: ${PASSWORD}

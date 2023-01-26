@@ -1,4 +1,4 @@
-package study.test.practice;
+package study.test.practice.test.configuration;
 
 import com.google.common.base.CaseFormat;
 import lombok.RequiredArgsConstructor;
