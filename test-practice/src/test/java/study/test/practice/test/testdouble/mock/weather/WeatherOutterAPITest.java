@@ -10,35 +10,27 @@ import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.config.ObjectMapperConfig;
 import io.restassured.config.RestAssuredConfig;
 import io.restassured.specification.RequestSpecification;
-import net.minidev.json.parser.JSONParser;
-import org.json.JSONObject;
 import org.junit.Rule;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
-import org.springframework.core.io.ClassPathResource;
+import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
 import org.springframework.restdocs.RestDocumentationContextProvider;
 import org.springframework.restdocs.RestDocumentationExtension;
 import org.springframework.restdocs.operation.preprocess.OperationPreprocessor;
 import org.springframework.restdocs.restassured3.RestAssuredOperationPreprocessorsConfigurer;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 import study.test.practice.test.configuration.DatabaseConfiguration;
 
-import java.io.InputStreamReader;
-
-import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
-import static com.github.tomakehurst.wiremock.client.WireMock.get;
-import static com.github.tomakehurst.wiremock.client.WireMock.ok;
-import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
-import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
 import static io.restassured.RestAssured.given;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.modifyUris;
@@ -47,6 +39,10 @@ import static org.springframework.restdocs.restassured3.RestAssuredRestDocumenta
 
 @RunWith(SpringRunner.class)
 @ActiveProfiles("test")
+@AutoConfigureWireMock(port = 0, stubs = "classpath:/")
+@TestPropertySource(properties = {
+        "app.gateway-uri=http://localhost:${wiremock.server.port}"
+})
 @ExtendWith(RestDocumentationExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class WeatherOutterAPITest {
@@ -58,7 +54,12 @@ class WeatherOutterAPITest {
     protected int port;
 
     @Rule
-    public WireMockRule wiremock = new WireMockRule(9001);
+    public static WireMockRule wiremock = new WireMockRule(0);
+
+    @BeforeAll
+    static void seup() {
+    }
+
 
     protected RequestSpecification specification;
 
@@ -67,6 +68,7 @@ class WeatherOutterAPITest {
 
     public WeatherOutterAPITest() {
         initRestAssureConfiguration();
+        seup();
     }
 
     private void initRestAssureConfiguration() {
@@ -86,7 +88,6 @@ class WeatherOutterAPITest {
     void beforeEach(RestDocumentationContextProvider restDocumentation) throws JsonProcessingException {
         RestAssured.port = port;
 
-
         OperationPreprocessor operationPreprocessor = modifyUris()
                 .host("222.123.12.4")
                 .removePort();
@@ -103,74 +104,25 @@ class WeatherOutterAPITest {
 
         RestAssured.enableLoggingOfRequestAndResponseIfValidationFails();
         databaseConfiguration.truncateAllEntity();
+
+        wiremock.start();
     }
 
     @AfterEach
     void after() {
-        wiremock.stop();
+        wiremock.shutdown();
     }
 
     @Test
-    @DisplayName("???")
-    void m3() throws Exception {
-        wiremock.stubFor(
-                get(urlEqualTo("/temp2"))
-                        .willReturn(aResponse()
-                                .withStatus(201)
-                                .withHeader("Content-Type", "application/json")
-                                .withBody("test.json")));
-
-        given()
-                .contentType(APPLICATION_JSON_VALUE)
-                .get("/temp2")
-                .then()
-                .statusCode(201);
-
-    }
-
-    @Test
-    @DisplayName("???")
-    void m() throws Exception {
-        wiremock.stubFor(
-                get(urlEqualTo("http://apis.data.go.kr/1360000/VilageFcstInfoService_2.0/getUltraSrtNcst?serviceKey=qIJIseyvqJg2M4a6oS0GjBZZ5m3oiHWsckheQSV22aNeWV%2FIV0Cs9OUmVvf%2Fg8WQyPLsXEho3H%2Bgvh2XBT40KQ%3D%3D&numOfRows%3D10&pageNo%3D1&dataType=JSON&base_date=20230116&base_time=1730&nx=60&ny=127"))
-                        .willReturn(ok()
-                                .withHeader("Content-Type", "application/json")
-                                .withBody("response.json")));
-//        base_date=20230116&base_time=1730&nx=60&ny=127
-        wiremock.start();
-
+    @DisplayName("TODO")
+    void 외부_API_테스트() {
         given(this.specification)
                 .contentType(APPLICATION_JSON_VALUE)
-                .queryParam("date", "20230116")
-                .queryParam("hour", "1730")
-                .get("/api/outter")
+                .get("/api/weather")
 
                 .then()
                 .statusCode(200)
                 .log().all();
-
-    }
-
-    @Test
-    @DisplayName("???")
-    void m2() {
-        wiremock.stubFor(
-                get(urlMatching("/api/outter"))
-                        .willReturn(ok()
-                                .withHeader("Content-Type", "application/json")
-                                .withBodyFile("response.json"))
-        );
-
-        given(this.specification)
-                .contentType(APPLICATION_JSON_VALUE)
-                .queryParam("date", "20230116")
-                .queryParam("hour", "1730")
-                .get("/api/outter")
-
-                .then()
-                .statusCode(200)
-                .log().all();
-
     }
 
 }

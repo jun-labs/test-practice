@@ -9,7 +9,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import study.test.practice.domain.user.entity.User;
 import study.test.practice.domain.user.infrastructure.UserJpaRepository;
-import study.test.practice.test.configuration.testcontainer.AbstractTestContainer;
+import study.test.practice.test.configuration.configuration.AbstractTestConfiguration;
 import study.test.practice.web.user.application.UserServiceImpl;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -18,7 +18,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class UserServiceTest extends AbstractTestContainer {
+class UserServiceAbstractTest extends AbstractTestConfiguration {
 
     @Mock
     private UserJpaRepository userJpaRepository;
