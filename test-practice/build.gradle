@@ -1,17 +1,29 @@
 buildscript {
     ext {
         springBootVersion = '2.7.7.RELEASE'
+        queryDslVersion = "5.0.0"
     }
     repositories {
         mavenCentral()
+        maven {
+            url "https://jitpack.io"
+        }
     }
 }
-
 plugins {
     id 'java'
     id 'org.springframework.boot' version '2.7.7'
+    id 'com.ewerk.gradle.plugins.querydsl' version '1.0.10'
     id 'io.spring.dependency-management' version '1.0.15.RELEASE'
     id 'com.github.hesch.execfork' version '0.1.15'
+}
+
+ext.springCloudVersion = "Hoxton.SR11"
+
+dependencyManagement {
+    imports {
+        mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+    }
 }
 
 apply plugin: 'java'
@@ -35,8 +47,10 @@ dependencies {
     implementation('org.springframework.boot:spring-boot-starter-validation')
 
     // Jpa, QueryDSL
-    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
-    implementation('com.querydsl:querydsl-jpa')
+    implementation('org.springframework.boot:spring-boot-starter-data-jpa')
+    implementation("com.querydsl:querydsl-jpa:${queryDslVersion}")
+    implementation("com.querydsl:querydsl-apt:${queryDslVersion}")
+    implementation("com.querydsl:querydsl-core:${queryDslVersion}")
 
     // Jdbc
     implementation(group: 'org.springframework.boot', name: 'spring-boot-starter-jdbc', version: '2.7.7')
@@ -57,21 +71,43 @@ dependencies {
     // AcceptanceTest
     testImplementation('org.springframework.restdocs:spring-restdocs-mockmvc')
     testImplementation('org.springframework.restdocs:spring-restdocs-restassured')
-    testImplementation "com.github.tomakehurst:wiremock-jre8:2.35.0"
 
-
-
-
+    //wiremock
+    testImplementation ("org.springframework.cloud:spring-cloud-starter-contract-stub-runner")
 
     // Lombok
     compileOnly("org.projectlombok:lombok")
     annotationProcessor('org.projectlombok:lombok')
-    annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
+    annotationProcessor('org.springframework.boot:spring-boot-configuration-processor')
     testAnnotationProcessor('org.projectlombok:lombok')
-    testCompileOnly("org.projectlombok:lombok")
-
+    testCompileOnly('org.projectlombok:lombok')
 }
 
 tasks.named('test') {
     useJUnitPlatform()
 }
+
+// QueryDSL
+def querydslDir = "$buildDir/generated/querydsl"
+
+querydsl {
+    jpa = true
+    querydslSourcesDir = querydslDir
+}
+
+sourceSets {
+    main.java.srcDir querydslDir
+}
+
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+    querydsl.extendsFrom compileClasspath
+    asciidoctorExtensions
+}
+
+compileQuerydsl {
+    options.annotationProcessorPath = configurations.querydsl
+}
+
