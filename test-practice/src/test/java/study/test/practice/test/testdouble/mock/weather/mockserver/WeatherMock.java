@@ -1,4 +1,4 @@
-package study.test.practice.test.testdouble.mock.weather;
+package study.test.practice.test.testdouble.mock.weather.mockserver;
 
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.client.WireMock;
