@@ -1,5 +1,6 @@
 package study.test.practice.test.testdouble.spy;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
@@ -9,8 +10,8 @@ import org.mockito.exceptions.verification.WantedButNotInvoked;
 import org.mockito.junit.MockitoJUnitRunner;
 import study.test.practice.domain.user.entity.User;
 import study.test.practice.domain.user.infrastructure.UserJpaRepository;
+import study.test.practice.test.configuration.configuration.AbstractTestConfiguration;
 import study.test.practice.web.user.application.UserServiceImpl;
-import study.test.practice.test.configuration.testcontainer.AbstractTestContainer;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
@@ -21,7 +22,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-class UserServiceSpyTest extends AbstractTestContainer {
+class UserServiceSpyAbstractTest extends AbstractTestConfiguration {
 
     @Spy
     public UserJpaRepository userJpaRepository;
@@ -72,30 +73,27 @@ class UserServiceSpyTest extends AbstractTestContainer {
     @DisplayName("Spy를 사용하고 상호작용을 하지 않으면 WantedButNotInvoked가 발생한다.")
     void Spy_Not_Calls_Real_Method_Do_Return() {
         // given
-//        User newUser = new User( "devjun");
-        User result = spy(User.class);
+        User newUser = new User( "devjun");
 
-//        when(userJpaRepository.save(newUser)).thenReturn(result);
+        doReturn(newUser).when(userService).save(newUser);
 
-        doReturn(result).when(userService).save(any(User.class));
+        userService.save(newUser);
 
-//        Assertions.assertEquals(1L, newUser.getUserId());
-
-//
-//        verify(userService, times(1)).save(any(User.class));
+        verify(userService, times(1)).save(any(User.class));
     }
 
-    /**
-     * 로그 확인용. 전체 테스트를 돌릴땐 주석처리
-     @Test
-     @DisplayName("Spy를 사용하고 상호작용을 하지 않으면 WantedButNotInvoked가 발생한다.")
-     void Spy_Not_Calls_Real_Method_For_Log() {
-     // given
-     User newUser = new User("devjun");
-     when(userService.save(newUser)).thenReturn(new User(1L, "devjun"));
+    @Test
+    @Disabled
+    @DisplayName("Spy를 사용하고 상호작용을 하지 않으면 WantedButNotInvoked가 발생한다.")
+    void Spy_Not_Calls_Real_Method_For_Log() {
+        // given
+        User newUser = new User("devjun");
+        when(userService.save(newUser)).thenReturn(new User(1L, "devjun"));
 
-     // when, then
-     verify(userJpaRepository, times(1)).save(any(User.class));
-     }
-      * */
+        // when
+        userService.save(newUser);
+
+        // when, then
+        verify(userJpaRepository, times(1)).save(any(User.class));
+    }
 }

@@ -11,7 +11,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import study.test.practice.domain.user.entity.User;
-import study.test.practice.test.configuration.testcontainer.AbstractTestContainer;
+import study.test.practice.test.configuration.configuration.AbstractTestConfiguration;
 import study.test.practice.web.user.presentation.UserController;
 import study.test.practice.web.user.presentation.dto.request.UserSignupRequest;
 import study.test.practice.web.user.presentation.dto.response.UserSignupResponse;
@@ -23,7 +23,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @AutoConfigureMockMvc
-class FakeUserControllerTest extends AbstractTestContainer {
+class FakeUserControllerAbstractTest extends AbstractTestConfiguration {
 
     @Mock
     private FakeUserService userService;
