@@ -1,6 +1,14 @@
+buildscript {
+    ext {
+        snippetsDir = file("build/generated-snippets")
+        queryDslVersion = "5.0.0"
+    }
+}
+
 plugins {
     id 'java'
     id 'org.springframework.boot' version '2.7.8'
+    id 'com.ewerk.gradle.plugins.querydsl' version '1.0.10'
     id 'io.spring.dependency-management' version '1.0.15.RELEASE'
 }
 
@@ -15,20 +23,30 @@ repositories {
 dependencies {
     // SpringBoot
     implementation('org.springframework.boot:spring-boot-starter')
-    implementation('org.springframework.boot:spring-boot-starter-web:2.6.5')
-    implementation(group: 'org.springframework.boot', name: 'spring-boot-starter-validation', version: '2.7.6')
+    implementation('org.springframework.boot:spring-boot-starter-web:2.7.8')
+    implementation(group: 'org.springframework.boot', name: 'spring-boot-starter-validation', version: '2.7.8')
+    implementation(group: 'org.springframework.boot', name: 'spring-boot-starter-aop', version: '2.7.8')
+
+    // JDBC
+    implementation(group: 'org.springframework.boot', name: 'spring-boot-starter-jdbc', version: '2.7.8')
 
     // JPA, QueryDSL
-    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+    implementation('org.springframework.boot:spring-boot-starter-data-jpa')
+    implementation("com.querydsl:querydsl-jpa:${queryDslVersion}")
+    implementation("com.querydsl:querydsl-apt:${queryDslVersion}")
+    implementation("com.querydsl:querydsl-core:${queryDslVersion}")
 
     // Webflux
-    implementation(group: 'org.springframework.boot', name: 'spring-boot-starter-webflux', version: '2.7.0')
+    implementation(group: 'org.springframework.boot', name: 'spring-boot-starter-webflux', version: '2.7.8')
 
     // UUID
     implementation('com.fasterxml.uuid:java-uuid-generator:4.1.0')
 
     // jasypt
     implementation('com.github.ulisesbocchio:jasypt-spring-boot-starter:3.0.5')
+
+    // Spring Cloud
+    implementation('org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE')
 
     //--------------------------------------------------------------------------
 
@@ -49,11 +67,15 @@ dependencies {
     // AcceptanceTest
     testImplementation('org.springframework.restdocs:spring-restdocs-mockmvc')
     testImplementation('org.springframework.restdocs:spring-restdocs-restassured')
-    testImplementation('com.github.tomakehurst:wiremock-jre8:2.35.0')
+    implementation(group: 'org.springframework.cloud', name: 'spring-cloud-starter-contract-stub-runner', version: '2.7.8')
     testImplementation('com.github.tomakehurst:wiremock-jre8-standalone:2.35.0')
-    implementation(group: 'org.springframework.cloud', name: 'spring-cloud-starter-contract-stub-runner', version: '3.0.6')
     testImplementation('de.skuzzle.springboot.test:spring-boot-wiremock:0.0.18')
     testImplementation('com.squareup.okhttp3:mockwebserver')
+    implementation('com.squareup.okhttp3:okhttp:4.10.0')
+    testImplementation('com.squareup.okhttp3:mockwebserver:4.10.0')
+    implementation('org.testcontainers:localstack:1.16.3')
+    implementation('org.apache.commons:commons-lang3:3.9')
+    implementation('com.squareup:javapoet:1.11.1')
 
     //--------------------------------------------------------------------------
 
@@ -64,10 +86,37 @@ dependencies {
     annotationProcessor('org.projectlombok:lombok')
     annotationProcessor('org.springframework.boot:spring-boot-configuration-processor')
 
-    implementation 'com.squareup.okhttp3:okhttp:4.10.0'
-    testImplementation 'com.squareup.okhttp3:mockwebserver:4.10.0'
+    compileOnly('com.google.auto.service:auto-service:1.0-rc6')
+    annotationProcessor('com.google.auto.service:auto-service:1.0-rc6')
+    implementation(group: 'com.google.auto.service', name: 'auto-service', version: '1.0')
+
 }
 
 tasks.named('test') {
     useJUnitPlatform()
+
+}
+
+// QueryDSL
+def querydslDir = "$buildDir/generated/querydsl"
+
+querydsl {
+    jpa = true
+    querydslSourcesDir = querydslDir
+}
+
+sourceSets {
+    main.java.srcDir querydslDir
+}
+
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+    querydsl.extendsFrom compileClasspath
+    asciidoctorExtensions
+}
+
+compileQuerydsl {
+    options.annotationProcessorPath = configurations.querydsl
 }
