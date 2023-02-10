@@ -28,6 +28,16 @@ public class User {
         this.name = name;
     }
 
+    public User(
+            Long id,
+            String name,
+            Long version
+    ) {
+        this.id = id;
+        this.name = name;
+        this.version = version;
+    }
+
     public Long getId() {
         return id;
     }
