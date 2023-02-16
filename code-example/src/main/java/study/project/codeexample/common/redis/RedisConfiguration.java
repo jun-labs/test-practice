@@ -4,7 +4,6 @@ package study.project.codeexample.common.redis;
 import org.redisson.Redisson;
 import org.redisson.api.RedissonClient;
 import org.redisson.config.Config;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
@@ -20,13 +19,19 @@ import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSeriali
 import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.RedisSerializationContext;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
+import org.springframework.orm.jpa.JpaTransactionManager;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
 
+// 참조1: https://stackoverflow.com/questions/58334223/spring-transaction-aware-cache-is-not-working
+// 참조2: https://github.com/spring-projects/spring-data-redis/issues/951
 @EnableCaching
 @Configuration
+@EnableTransactionManagement
 public class RedisConfiguration {
 
     @Value("${spring.redis.host}")
@@ -52,6 +57,11 @@ public class RedisConfiguration {
         return new LettuceConnectionFactory(redisStandaloneConfiguration);
     }
 
+    @Bean
+    public PlatformTransactionManager transactionManager() {
+        return new JpaTransactionManager();
+    }
+
     @Bean(name = "redisLogTemplate")
     public RedisTemplate<String, Object> redisLogTemplate() {
         RedisTemplate<String, Object> redisTemplate = new RedisTemplate<>();
@@ -59,6 +69,7 @@ public class RedisConfiguration {
         redisTemplate.setValueSerializer(new Jackson2JsonRedisSerializer<>(Object.class));
         redisTemplate.setValueSerializer(new GenericJackson2JsonRedisSerializer());
         redisTemplate.setConnectionFactory(redisLogConnectionFactory());
+        redisTemplate.setEnableTransactionSupport(true);
         return redisTemplate;
     }
 
@@ -71,19 +82,19 @@ public class RedisConfiguration {
         return new LettuceConnectionFactory(redisStandaloneConfiguration);
     }
 
-    @Bean
     @Primary
-    public RedisCacheManager cacheManager(@Qualifier("redisCacheConnectionFactory") RedisConnectionFactory connectionFactory) {
+    @Bean(name = "cacheManager")
+    public RedisCacheManager cacheManager(RedisConnectionFactory connectionFactory) {
         RedisCacheConfiguration defaultConfig = RedisCacheConfiguration.defaultCacheConfig()
                 .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(new StringRedisSerializer()))
                 .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(new GenericJackson2JsonRedisSerializer()));
 
         Map<String, RedisCacheConfiguration> redisCacheConfigMap = new HashMap<>();
-        redisCacheConfigMap.put("post", defaultConfig.entryTtl(Duration.ofHours(1)));
-        redisCacheConfigMap.put("feed", defaultConfig.entryTtl(Duration.ofSeconds(5L)));
-
-        return RedisCacheManager.builder(connectionFactory)
+        redisCacheConfigMap.put("userCache", defaultConfig.entryTtl(Duration.ofHours(1)));
+        RedisCacheManager cacheManager = RedisCacheManager.builder(connectionFactory)
                 .withInitialCacheConfigurations(redisCacheConfigMap)
                 .build();
+        cacheManager.setTransactionAware(true);
+        return cacheManager;
     }
 }
