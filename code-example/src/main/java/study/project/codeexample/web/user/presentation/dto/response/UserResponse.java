@@ -2,7 +2,9 @@ package study.project.codeexample.web.user.presentation.dto.response;
 
 import study.project.codeexample.domain.user.entity.User;
 
-public class UserResponse {
+import java.io.Serializable;
+
+public class UserResponse implements Serializable {
 
     private final String name;
     private final String domain;
