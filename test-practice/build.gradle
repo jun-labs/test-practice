@@ -74,6 +74,8 @@ dependencies {
 
     //wiremock
     testImplementation ("org.springframework.cloud:spring-cloud-starter-contract-stub-runner")
+    implementation (group: 'com.tngtech.archunit', name: 'archunit', version: '0.23.1')
+
 
     // Lombok
     compileOnly("org.projectlombok:lombok")
